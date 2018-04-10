@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
@@ -25,9 +24,6 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -35,13 +31,13 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
+@SuppressWarnings("javadoc")
 public class CulkinAsssignmentNine {
 	public final Holder<Bezier> currentCurve;
 	public final Map<String, Bezier> curveDirectory;
@@ -316,10 +312,10 @@ class BezierPanel extends JPanel {
 
 		g.setColor(Color.BLUE);
 
-		g.drawLine(halfWidth, 0, halfWidth, ourHeight * 2);
-		g.drawLine(0, halfHeight, ourWidth * 2, halfHeight);
+		g.drawLine(halfWidth, 0, halfWidth, ourHeight);
+		g.drawLine(0, halfHeight, ourWidth, halfHeight);
 
-		g.translate(halfWidth, halfHeight);
+		// g.translate(halfWidth, halfHeight);
 
 		for (Bezier curve : curves) {
 			if (curve.controls.isEmpty())
@@ -327,7 +323,7 @@ class BezierPanel extends JPanel {
 
 			{
 				g.setColor(curve.boxColor);
-				TDPoint[] ex = curve.extrema();
+				TDPoint[] ex = curve.extrema(new TDHTranslate(halfWidth, halfHeight));
 
 				g.drawLine((int) ex[0].x, (int) ex[0].y, (int) ex[1].x, (int) ex[1].y);
 				g.drawLine((int) ex[1].x, (int) ex[1].y, (int) ex[2].x, (int) ex[2].y);
@@ -425,6 +421,10 @@ class Bezier {
 	}
 
 	public TDPoint[] extrema() {
+		return extrema(new TDHIdentity());
+	}
+	
+	public TDPoint[] extrema(TDHTransform transform) {
 		TDPoint[] box = new TDPoint[4];
 
 		double xMin = Double.MAX_VALUE, xMax = Double.MIN_VALUE;
@@ -455,6 +455,11 @@ class Bezier {
 		box[2] = new TDPoint(xMax, yMax);
 		box[3] = new TDPoint(xMin, yMax);
 
+		box[0] = transform.transform(box[0].toTDHPoint()).toTDPoint();
+		box[1] = transform.transform(box[1].toTDHPoint()).toTDPoint();
+		box[2] = transform.transform(box[2].toTDHPoint()).toTDPoint();
+		box[3] = transform.transform(box[3].toTDHPoint()).toTDPoint();
+		
 		return box;
 	}
 
@@ -643,8 +648,7 @@ class PointRemover implements ActionListener {
 
 		String msg = String.format("Do you want to remove the control point (%.2f, %.2f)?", punkt.x, punkt.y);
 
-		int confirmed = JOptionPane.showConfirmDialog(fram, msg, "Remove Control Point?",
-				JOptionPane.YES_NO_OPTION);
+		int confirmed = JOptionPane.showConfirmDialog(fram, msg, "Remove Control Point?", JOptionPane.YES_NO_OPTION);
 
 		if (confirmed == JOptionPane.YES_OPTION) {
 			pointModel.remove(selectedIndex);
