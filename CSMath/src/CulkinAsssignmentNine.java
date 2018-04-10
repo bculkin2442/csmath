@@ -7,8 +7,12 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -27,19 +31,38 @@ import javax.swing.border.BevelBorder;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
-@SuppressWarnings("javadoc")
 public class CulkinAsssignmentNine {
+	public final Holder<Bezier> currentCurve;
+	public final Map<String, Bezier> curveDirectory;
+	
+	public CulkinAsssignmentNine() {
+		Bezier curve = new Bezier();
+
+		curveDirectory = new HashMap<>();
+		curveDirectory.put("Default Curve", curve);
+		
+		currentCurve = new Holder<>();
+		currentCurve.setVal(curve);
+	}
+
 	public static void main(String[] args) {
+		CulkinAsssignmentNine assign = new CulkinAsssignmentNine();
+
+		JFrame fram = assign.setupFrame();
+
+		fram.setSize(640, 480);
+		fram.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		fram.setVisible(true);
+	}
+
+	private JFrame setupFrame() {
 		JFrame fram = new JFrame("Bezier Grapher");
 		fram.setLayout(new GridLayout(1, 1));
 
 		JPanel canvasPanel = new JPanel();
 		canvasPanel.setLayout(new GridLayout(1, 1));
 
-		Bezier curve = new Bezier();
-
-		BezierPanel canvas = new BezierPanel();
-		canvas.curves.add(curve);
+		BezierPanel canvas = new BezierPanel(curveDirectory.values());
 
 		canvasPanel.add(canvas);
 
@@ -52,6 +75,14 @@ public class CulkinAsssignmentNine {
 		DefaultListModel<TDPoint> pointModel = new DefaultListModel<>();
 		pointModel.addListDataListener(new CanvasRepainter(canvas));
 
+		currentCurve.addHolderListener((val) -> {
+			pointModel.clear();
+			
+			for(TDPoint punkt : val.controls) {
+				pointModel.addElement(punkt);
+			}
+		});
+		
 		JList<TDPoint> pointList = new JList<>(pointModel);
 		pointList.setCellRenderer(new TDPointRenderer());
 
@@ -63,7 +94,7 @@ public class CulkinAsssignmentNine {
 		buttonPanel.setLayout(new GridLayout(1, 2));
 
 		JButton addPoint = new JButton("Add Control Points...");
-		addPoint.addActionListener(new PointAdder(pointModel, curve, fram));
+		addPoint.addActionListener(new PointAdder(pointModel, currentCurve, fram));
 
 		JButton remPoint = new JButton("Remove Control Point");
 		remPoint.addActionListener(new PointRemover(fram, pointList, pointModel));
@@ -77,167 +108,12 @@ public class CulkinAsssignmentNine {
 		JSplitPane main = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, points, canvasPanel);
 
 		fram.add(main);
-
-		fram.setSize(640, 480);
-		fram.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		fram.setVisible(true);
-	}
-}
-
-class CanvasRepainter implements ListDataListener {
-	private final BezierPanel canvas;
-
-	public CanvasRepainter(BezierPanel canvas) {
-		this.canvas = canvas;
-	}
-
-	@Override
-	public void intervalRemoved(ListDataEvent e) {
-		canvas.repaint();
-	}
-
-	@Override
-	public void intervalAdded(ListDataEvent e) {
-		canvas.repaint();
-	}
-
-	@Override
-	public void contentsChanged(ListDataEvent e) {
-		canvas.repaint();
-	}
-}
-
-class PointAdder implements ActionListener {
-	private final DefaultListModel<TDPoint> pointModel;
-	private final Bezier curve;
-	private final JFrame fram;
-
-	public PointAdder(DefaultListModel<TDPoint> pointModel, Bezier curve, JFrame fram) {
-		this.pointModel = pointModel;
-		this.curve = curve;
-		this.fram = fram;
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent ev) {
-		JDialog dia = new JDialog(fram);
-		dia.setTitle("Add Control Point");
-		dia.setModalityType(ModalityType.MODELESS);
-		dia.setLayout(new BorderLayout());
-
-		JPanel fields = new JPanel();
-		fields.setLayout(new GridLayout(2, 1));
-
-		DoubleInputPanel xPanel = new DoubleInputPanel("X Coordinate: ");
-		DoubleInputPanel yPanel = new DoubleInputPanel("Y Coordinate: ");
-
-		fields.add(xPanel);
-		fields.add(yPanel);
-
-		JPanel buttons = new JPanel();
-		buttons.setLayout(new GridLayout(1, 2));
-
-		JButton add = new JButton("Add Control Point");
-
-		AddListener addListener = new AddListener(xPanel, yPanel);
-		add.addActionListener(addListener);
-
-		JButton cancel = new JButton("Cancel");
-		cancel.addActionListener((aev) -> {
-			dia.dispose();
-		});
-
-		buttons.add(add);
-		buttons.add(cancel);
-
-		xPanel.field.addActionListener((aev) -> {
-			yPanel.field.requestFocusInWindow();
-		});
-
-		yPanel.field.addActionListener((aev) -> {
-			addListener.actionPerformed(null);
-		});
-
-		dia.add(fields, BorderLayout.CENTER);
-		dia.add(buttons, BorderLayout.PAGE_END);
-
-		dia.pack();
-		dia.setVisible(true);
-	}
-
-	class AddListener implements ActionListener {
-		private final DoubleInputPanel xPanel;
-		private final DoubleInputPanel yPanel;
-
-		public AddListener(DoubleInputPanel xPanel, DoubleInputPanel yPanel) {
-			this.xPanel = xPanel;
-			this.yPanel = yPanel;
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent aev) {
-			double xVal = (Double) xPanel.field.getValue();
-			double yVal = (Double) yPanel.field.getValue();
-
-			TDPoint punkt = new TDPoint(xVal, yVal);
-
-			pointModel.addElement(punkt);
-			curve.controls.add(punkt);
-
-			xPanel.field.setValue(0.0);
-			yPanel.field.setValue(0.0);
-
-			xPanel.field.requestFocusInWindow();
-		}
-	}
-}
-
-class PointRemover implements ActionListener {
-	private final JFrame fram;
-	private final JList<TDPoint> pointList;
-	private final DefaultListModel<TDPoint> pointModel;
-
-	public PointRemover(JFrame fram, JList<TDPoint> pointList, DefaultListModel<TDPoint> pointModel) {
-		this.fram = fram;
-		this.pointList = pointList;
-		this.pointModel = pointModel;
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent ev) {
-		int selectedIndex = pointList.getSelectedIndex();
-		TDPoint punkt = pointModel.get(selectedIndex);
-
-		String msg = String.format("Do you want to remove the control point (%.2f, %.2f)?", punkt.x, punkt.y);
-
-		int confirmed = JOptionPane.showConfirmDialog(fram, msg, "Remove Control Point?", JOptionPane.YES_NO_OPTION);
-
-		if (confirmed == JOptionPane.YES_OPTION) {
-			pointModel.remove(selectedIndex);
-		}
-	}
-}
-
-class DoubleInputPanel extends JPanel {
-	private static final long serialVersionUID = 1031310890698539040L;
-
-	public final JFormattedTextField field;
-
-	public DoubleInputPanel(String label) {
-		super();
-		setLayout(new BorderLayout());
-
-		JLabel xLabel = new JLabel(label);
-
-		field = new JFormattedTextField(0.0);
-
-		add(xLabel, BorderLayout.LINE_START);
-		add(field, BorderLayout.CENTER);
+		return fram;
 	}
 }
 
 class BezierPanel extends JPanel {
-	public final List<Bezier> curves;
+	public final Collection<Bezier> curves;
 
 	private static final long serialVersionUID = 8748298173487657108L;
 
@@ -245,6 +121,14 @@ class BezierPanel extends JPanel {
 		super();
 
 		curves = new LinkedList<>();
+		
+		setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+	}
+	
+	public BezierPanel(Collection<Bezier> curvs) {
+		super();
+		
+		curves = curvs;
 
 		setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 	}
@@ -261,22 +145,35 @@ class BezierPanel extends JPanel {
 
 		g.setColor(Color.WHITE);
 
+		g.fillRect(0, 0, ourWidth, ourHeight);
+
+		g.setColor(Color.BLUE);
+
+		g.drawLine(halfWidth, 0, halfWidth, ourHeight * 2);
+		g.drawLine(0, halfHeight, ourWidth * 2, halfHeight);
+
 		g.translate(halfWidth, halfHeight);
 
-		g.fillRect(-halfWidth, -halfHeight, ourWidth, ourHeight);
-
-		g.setColor(Color.BLACK);
-
 		for (Bezier curve : curves) {
+			g.setColor(Color.RED);
+			for(TDPoint control : curve.controls) {
+				drawCircle(g, control.x, control.y, 6);
+			}
+			
 			for (int i = 0; i < curve.parts; i++) {
 				double dT = 1.0 / curve.parts;
 
 				TDPoint first = curve.scaleEval(dT * i);
 				TDPoint second = curve.scaleEval(dT * (i + 1));
-
+				
+				g.setColor(curve.col);
 				g.drawLine((int) first.x, (int) first.y, (int) second.x, (int) second.y);
 			}
 		}
+	}
+	
+	private static void drawCircle(Graphics g, double x, double y, int diameter) {
+		g.fillOval((int)x - diameter/2, (int)y - diameter/2, diameter, diameter);
 	}
 }
 
@@ -286,6 +183,8 @@ class Bezier {
 	public int parts = 100;
 	public int scale = 5;
 
+	public Color col = Color.BLACK;
+	
 	public Bezier(TDPoint... points) {
 		controls = new ArrayList<>();
 
@@ -452,5 +351,223 @@ final class TDPointRenderer extends JLabel implements ListCellRenderer<TDPoint> 
 		setText(String.format("(%.2f, %.2f)", value.x, value.y));
 
 		return this;
+	}
+}
+
+class PointRemover implements ActionListener {
+	private final JFrame fram;
+	private final JList<TDPoint> pointList;
+	private final DefaultListModel<TDPoint> pointModel;
+
+	public PointRemover(JFrame fram, JList<TDPoint> pointList, DefaultListModel<TDPoint> pointModel) {
+		this.fram = fram;
+		this.pointList = pointList;
+		this.pointModel = pointModel;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent ev) {
+		int selectedIndex = pointList.getSelectedIndex();
+		TDPoint punkt = pointModel.get(selectedIndex);
+
+		String msg = String.format("Do you want to remove the control point (%.2f, %.2f)?", punkt.x, punkt.y);
+
+		int confirmed = JOptionPane.showConfirmDialog(fram, msg, "Remove Control Point?",
+				JOptionPane.YES_NO_OPTION);
+
+		if (confirmed == JOptionPane.YES_OPTION) {
+			pointModel.remove(selectedIndex);
+		}
+	}
+}
+
+class PointAdder implements ActionListener {
+	private final DefaultListModel<TDPoint> pointModel;
+	private Bezier curve;
+	private final JFrame fram;
+
+	public PointAdder(DefaultListModel<TDPoint> pointModel, Holder<Bezier> curveHolder, JFrame fram) {
+		this.pointModel = pointModel;
+		this.curve = curveHolder.getVal();
+		this.fram = fram;
+		
+		curveHolder.addHolderListener((curv) -> {
+			curve = curv;
+		});
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent ev) {
+		JDialog dia = new JDialog(fram);
+		dia.setTitle("Add Control Point");
+		dia.setModalityType(ModalityType.MODELESS);
+		dia.setLayout(new BorderLayout());
+
+		JPanel fields = new JPanel();
+		fields.setLayout(new GridLayout(2, 1));
+
+		DoubleInputPanel xPanel = new DoubleInputPanel("X Coordinate: ");
+		DoubleInputPanel yPanel = new DoubleInputPanel("Y Coordinate: ");
+
+		fields.add(xPanel);
+		fields.add(yPanel);
+
+		JPanel buttons = new JPanel();
+		buttons.setLayout(new GridLayout(1, 2));
+
+		JButton add = new JButton("Add Control Point");
+
+		AddListener addListener = new AddListener(xPanel, yPanel);
+		add.addActionListener(addListener);
+
+		JButton cancel = new JButton("Cancel");
+		cancel.addActionListener((aev) -> {
+			dia.dispose();
+		});
+
+		buttons.add(add);
+		buttons.add(cancel);
+
+		xPanel.field.addActionListener((aev) -> {
+			yPanel.field.requestFocusInWindow();
+		});
+
+		yPanel.field.addActionListener((aev) -> {
+			addListener.actionPerformed(null);
+		});
+
+		dia.add(fields, BorderLayout.CENTER);
+		dia.add(buttons, BorderLayout.PAGE_END);
+
+		dia.pack();
+		dia.setVisible(true);
+	}
+
+	class AddListener implements ActionListener {
+		private final DoubleInputPanel xPanel;
+		private final DoubleInputPanel yPanel;
+
+		public AddListener(DoubleInputPanel xPanel, DoubleInputPanel yPanel) {
+			this.xPanel = xPanel;
+			this.yPanel = yPanel;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent aev) {
+			double xVal = (Double) xPanel.field.getValue();
+			double yVal = (Double) yPanel.field.getValue();
+
+			TDPoint punkt = new TDPoint(xVal, yVal);
+
+			pointModel.addElement(punkt);
+			curve.controls.add(punkt);
+
+			xPanel.field.setValue(0.0);
+			yPanel.field.setValue(0.0);
+
+			xPanel.field.requestFocusInWindow();
+		}
+	}
+}
+
+class CanvasRepainter implements ListDataListener {
+	private final BezierPanel canvas;
+
+	public CanvasRepainter(BezierPanel canvas) {
+		this.canvas = canvas;
+	}
+
+	@Override
+	public void intervalRemoved(ListDataEvent e) {
+		canvas.repaint();
+	}
+
+	@Override
+	public void intervalAdded(ListDataEvent e) {
+		canvas.repaint();
+	}
+
+	@Override
+	public void contentsChanged(ListDataEvent e) {
+		canvas.repaint();
+	}
+}
+
+class DoubleInputPanel extends JPanel {
+	private static final long serialVersionUID = 1031310890698539040L;
+
+	public final JFormattedTextField field;
+
+	public DoubleInputPanel(String label) {
+		super();
+		setLayout(new BorderLayout());
+
+		JLabel xLabel = new JLabel(label);
+
+		field = new JFormattedTextField(0.0);
+
+		add(xLabel, BorderLayout.LINE_START);
+		add(field, BorderLayout.CENTER);
+	}
+}
+
+class Holder<E> {
+	private E val;
+
+	private final List<Consumer<E>> listeners;
+	
+	public Holder() {
+		listeners = new LinkedList<>();
+	}
+
+	public Holder(E val) {
+		this();
+		
+		this.val = val;
+	}
+
+	public E getVal() {
+		return val;
+	}
+
+	public void setVal(E val) {
+		this.val = val;
+		
+		for (Consumer<E> listen : listeners) {
+			listen.accept(val);
+		}
+	}
+
+	public void addHolderListener(Consumer<E> listen) {
+		listeners.add(listen);
+	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((val == null) ? 0 : val.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Holder<?> other = (Holder<?>) obj;
+		if (val == null) {
+			if (other.val != null)
+				return false;
+		} else if (!val.equals(other.val))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Holder [val=" + val + "]";
 	}
 }
