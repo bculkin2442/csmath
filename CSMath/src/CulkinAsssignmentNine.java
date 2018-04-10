@@ -8,6 +8,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -47,6 +48,8 @@ public class CulkinAsssignmentNine {
 
 		currentCurve = new Holder<>();
 		currentCurve.setVal(new Bezier());
+
+		curveDirectory.put("Default", currentCurve.getVal());
 	}
 
 	public static void main(String[] args) {
@@ -126,7 +129,7 @@ public class CulkinAsssignmentNine {
 		editingPanel.setBorder(new BevelBorder(BevelBorder.RAISED));
 
 		JButton editCurveProperties = new JButton("Edit Curve Properties");
-		editCurveProperties.addActionListener(new CurveEditor(fram, currentCurve));
+		editCurveProperties.addActionListener(new CurveEditor(fram, currentCurve, canvas));
 
 		editingPanel.add(editCurveProperties);
 
@@ -176,9 +179,11 @@ public class CulkinAsssignmentNine {
 class CurveEditor implements ActionListener {
 	private Bezier curve;
 	private JFrame fram;
+	private BezierPanel canvas;
 
-	public CurveEditor(JFrame fram, Holder<Bezier> currentCurve) {
+	public CurveEditor(JFrame fram, Holder<Bezier> currentCurve, BezierPanel canvas) {
 		this.fram = fram;
+		this.canvas = canvas;
 
 		curve = currentCurve.getVal();
 
@@ -225,6 +230,8 @@ class CurveEditor implements ActionListener {
 			curve.curveColor = curveColor.picker.getColor();
 			curve.pointColor = pointColor.picker.getColor();
 			curve.boxColor = boxColor.picker.getColor();
+
+			canvas.repaint();
 		});
 
 		JButton resetButton = new JButton("Reset Changes");
@@ -317,13 +324,17 @@ class BezierPanel extends JPanel {
 
 		// g.translate(halfWidth, halfHeight);
 
+		TDHTransform translate = new TDHCombination(new TDHXAxisReflection(),
+				new TDHTranslate(halfWidth, halfHeight));
+
 		for (Bezier curve : curves) {
-			if (curve.controls.isEmpty())
+			if (curve.controls.isEmpty()) {
 				continue;
+			}
 
 			{
 				g.setColor(curve.boxColor);
-				TDPoint[] ex = curve.extrema(new TDHTranslate(halfWidth, halfHeight));
+				TDPoint[] ex = curve.extrema(translate);
 
 				g.drawLine((int) ex[0].x, (int) ex[0].y, (int) ex[1].x, (int) ex[1].y);
 				g.drawLine((int) ex[1].x, (int) ex[1].y, (int) ex[2].x, (int) ex[2].y);
@@ -333,16 +344,21 @@ class BezierPanel extends JPanel {
 
 			g.setColor(curve.pointColor);
 			for (TDPoint control : curve.controls) {
+				control = translate.transform(control.toTDHPoint()).toTDPoint();
+
 				drawCircle(g, control.x, control.y, 6);
 			}
 
+			g.setColor(curve.curveColor);
 			for (int i = 0; i < curve.parts; i++) {
 				double dT = 1.0 / curve.parts;
 
-				TDPoint first = curve.scaleEval(dT * i);
-				TDPoint second = curve.scaleEval(dT * (i + 1));
+				TDPoint firt = curve.scaleEval(dT * i);
+				TDPoint secod = curve.scaleEval(dT * (i + 1));
 
-				g.setColor(curve.curveColor);
+				TDPoint first = translate.transform(firt.toTDHPoint()).toTDPoint();
+				TDPoint second = translate.transform(secod.toTDHPoint()).toTDPoint();
+
 				g.drawLine((int) first.x, (int) first.y, (int) second.x, (int) second.y);
 			}
 		}
@@ -423,7 +439,7 @@ class Bezier {
 	public TDPoint[] extrema() {
 		return extrema(new TDHIdentity());
 	}
-	
+
 	public TDPoint[] extrema(TDHTransform transform) {
 		TDPoint[] box = new TDPoint[4];
 
@@ -432,6 +448,8 @@ class Bezier {
 
 		for (TDPoint punkt1 : controls) {
 			TDPoint punkt = punkt1.multiply(scale);
+
+			punkt = transform.transform(punkt.toTDHPoint()).toTDPoint();
 
 			if (punkt.x < xMin) {
 				xMin = punkt.x;
@@ -455,11 +473,6 @@ class Bezier {
 		box[2] = new TDPoint(xMax, yMax);
 		box[3] = new TDPoint(xMin, yMax);
 
-		box[0] = transform.transform(box[0].toTDHPoint()).toTDPoint();
-		box[1] = transform.transform(box[1].toTDHPoint()).toTDPoint();
-		box[2] = transform.transform(box[2].toTDHPoint()).toTDPoint();
-		box[3] = transform.transform(box[3].toTDHPoint()).toTDPoint();
-		
 		return box;
 	}
 
@@ -648,7 +661,8 @@ class PointRemover implements ActionListener {
 
 		String msg = String.format("Do you want to remove the control point (%.2f, %.2f)?", punkt.x, punkt.y);
 
-		int confirmed = JOptionPane.showConfirmDialog(fram, msg, "Remove Control Point?", JOptionPane.YES_NO_OPTION);
+		int confirmed = JOptionPane.showConfirmDialog(fram, msg, "Remove Control Point?",
+				JOptionPane.YES_NO_OPTION);
 
 		if (confirmed == JOptionPane.YES_OPTION) {
 			pointModel.remove(selectedIndex);
@@ -851,13 +865,21 @@ class Holder<E> {
 }
 
 enum TDHTransformType {
-	TRANSLATE, IDENTITY, SCALE, ROTATION, REFLECTION, SHEAR
+	TRANSLATE, IDENTITY, SCALE, ROTATION, REFLECTION, SHEAR, COMBINATION, MATRIX
 }
 
 @FunctionalInterface
 interface TDHTransform {
 	default TDHTransformType type() {
 		return TDHTransformType.IDENTITY;
+	}
+
+	default double[][] matrix() {
+		return new double[][] { new double[] { 1, 0, 0 }, new double[] { 0, 1, 0 }, new double[] { 0, 0, 1 } };
+	}
+
+	default TDHTransform invert() {
+		return new TDHIdentity();
 	}
 
 	TDHPoint transform(TDHPoint punkt);
@@ -896,6 +918,49 @@ class TDHTranslate implements TDHTransform {
 
 		return new TDHPoint(x, y, punkt.z);
 	}
+
+	@Override
+	public double[][] matrix() {
+		return new double[][] { new double[] { 1, 0, 0 }, new double[] { 0, 1, 0 }, new double[] { h, k, 1 } };
+	}
+
+	@Override
+	public TDHTransform invert() {
+		return new TDHTranslate(-h, -k);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		long temp;
+		temp = Double.doubleToLongBits(h);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(k);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TDHTranslate other = (TDHTranslate) obj;
+		if (Double.doubleToLongBits(h) != Double.doubleToLongBits(other.h))
+			return false;
+		if (Double.doubleToLongBits(k) != Double.doubleToLongBits(other.k))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "TDHTranslate [h=" + h + ", k=" + k + "]";
+	}
 }
 
 class TDHScale implements TDHTransform {
@@ -921,6 +986,16 @@ class TDHScale implements TDHTransform {
 		double z = punkt.z * sz;
 
 		return new TDHPoint(x, y, z);
+	}
+
+	@Override
+	public double[][] matrix() {
+		return new double[][] { new double[] { sx, 0, 0 }, new double[] { 0, sy, 0 },
+				new double[] { 0, 0, sz } };
+	}
+
+	public TDHTransform invert() {
+		return new TDHScale(1 / sx, 1 / sy, 1 / sy);
 	}
 
 	@Override
@@ -965,7 +1040,6 @@ class TDHRotation implements TDHTransform {
 	public final double theta;
 
 	public TDHRotation(double theta) {
-		super();
 		this.theta = theta;
 	}
 
@@ -975,6 +1049,15 @@ class TDHRotation implements TDHTransform {
 		double y = (punkt.x * Math.sin(theta)) - (punkt.y * Math.cos(theta));
 
 		return new TDHPoint(x, y, punkt.z);
+	}
+
+	public double[][] matrix() {
+		return new double[][] { new double[] { Math.cos(theta), Math.sin(theta), 0 },
+				new double[] { -Math.sin(theta), Math.cos(theta), 0 }, new double[] { 0, 0, 1 } };
+	}
+
+	public TDHTransform invert() {
+		return new TDHRotation(-theta);
 	}
 
 	@Override
@@ -1123,9 +1206,11 @@ class TDHLineReflection implements TDHTransform {
 
 	@Override
 	public TDHPoint transform(TDHPoint punkt) {
-		double x = 0;
-		double y = 0;
-		double z = 0;
+		double com = (a * a - b * b);
+
+		double x = (punkt.x * com) - (2 * a * b * punkt.y) - (2 * a * c * punkt.z);
+		double y = (-2 * a * b * punkt.x) + (punkt.y * com) - (2 * b * c * punkt.z);
+		double z = (punkt.z * com);
 
 		return new TDHPoint(x, y, z);
 	}
@@ -1165,5 +1250,156 @@ class TDHLineReflection implements TDHTransform {
 	@Override
 	public String toString() {
 		return "TDHLineReflection [a=" + a + ", b=" + b + ", c=" + c + "]";
+	}
+}
+
+class TDHShear implements TDHTransform {
+	public final double shx;
+	public final double shy;
+
+	@Override
+	public TDHTransformType type() {
+		return TDHTransformType.SHEAR;
+	}
+
+	public TDHShear(double shx, double shy) {
+		this.shx = shx;
+		this.shy = shy;
+	}
+
+	@Override
+	public TDHPoint transform(TDHPoint punkt) {
+		double x = punkt.x + (punkt.y * shx);
+		double y = punkt.y + (punkt.x * shy);
+
+		return new TDHPoint(x, y, punkt.z);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		long temp;
+		temp = Double.doubleToLongBits(shx);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(shy);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TDHShear other = (TDHShear) obj;
+		if (Double.doubleToLongBits(shx) != Double.doubleToLongBits(other.shx))
+			return false;
+		if (Double.doubleToLongBits(shy) != Double.doubleToLongBits(other.shy))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "TDHShear [shx=" + shx + ", shy=" + shy + "]";
+	}
+}
+
+class TDHMatrix implements TDHTransform {
+	public final double[][] mat;
+
+	public TDHMatrix(double[][] mat) {
+		super();
+		this.mat = mat;
+	}
+
+	@Override
+	public TDHTransformType type() {
+		return TDHTransformType.MATRIX;
+	}
+
+	@Override
+	public TDHPoint transform(TDHPoint punkt) {
+		double x = (punkt.x * mat[0][0]) + (punkt.y * mat[1][0]) + (punkt.z * mat[2][0]);
+		double y = (punkt.x * mat[0][1]) + (punkt.y * mat[1][1]) + (punkt.z * mat[2][1]);
+		double z = (punkt.x * mat[0][2]) + (punkt.y * mat[1][2]) + (punkt.z * mat[2][2]);
+
+		return new TDHPoint(x, y, z);
+	}
+
+	public TDHTransform then(double[][] matr) {
+		double[][] ret = new double[3][3];
+
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				for (int k = 0; k < 3; k++) {
+					ret[i][j] += mat[i][k] * matr[k][j];
+				}
+			}
+		}
+
+		return new TDHMatrix(ret);
+	}
+}
+
+class TDHCombination implements TDHTransform {
+	public final List<TDHTransform> forms;
+
+	@Override
+	public TDHTransformType type() {
+		return TDHTransformType.COMBINATION;
+	}
+
+	public TDHCombination(TDHTransform... forms) {
+		this.forms = new ArrayList<>(forms.length);
+
+		for (TDHTransform form : forms) {
+			this.forms.add(form);
+		}
+	}
+
+	@Override
+	public TDHPoint transform(TDHPoint punkt) {
+		TDHPoint ret = punkt;
+
+		for (TDHTransform form : forms) {
+			ret = form.transform(ret);
+		}
+
+		return ret;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((forms == null) ? 0 : forms.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TDHCombination other = (TDHCombination) obj;
+		if (forms == null) {
+			if (other.forms != null)
+				return false;
+		} else if (!forms.equals(other.forms))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "TDHCombination [forms=" + forms + "]";
 	}
 }
