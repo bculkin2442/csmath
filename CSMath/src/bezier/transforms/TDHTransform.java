@@ -1,6 +1,6 @@
 package bezier.transforms;
 
-import bezier.TDHPoint;
+import bezier.geom.TDHPoint;
 
 /**
  * Transformation applicable to TDHPoints.

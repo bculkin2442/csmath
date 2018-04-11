@@ -1,4 +1,4 @@
-package bezier;
+package bezier.geom;
 
 /**
  * A two-dimensional homogeneous point.

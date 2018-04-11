@@ -8,6 +8,9 @@ import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 
+import bezier.geom.Bezier;
+import bezier.geom.TDPoint;
+
 /**
  * Listener to remove points from a bezier curve.
  * 

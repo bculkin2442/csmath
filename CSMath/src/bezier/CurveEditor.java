@@ -14,6 +14,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
 
+import bezier.geom.Bezier;
+
 /*
  * Do editing of curve properties.
  */

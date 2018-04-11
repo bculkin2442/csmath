@@ -1,6 +1,6 @@
 package bezier.transforms;
 
-import bezier.TDHPoint;
+import bezier.geom.TDHPoint;
 
 /**
  * A transform that does coordinate translation.

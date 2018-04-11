@@ -1,4 +1,4 @@
-package bezier;
+package bezier.geom;
 
 import java.util.ArrayList;
 import java.util.List;

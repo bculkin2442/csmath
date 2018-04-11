@@ -17,6 +17,9 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.BevelBorder;
 
+import bezier.geom.Bezier;
+import bezier.geom.TDPoint;
+
 /**
  * Main class for Bezier graphing.
  * 

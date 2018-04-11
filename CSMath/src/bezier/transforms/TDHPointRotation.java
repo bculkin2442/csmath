@@ -1,6 +1,6 @@
 package bezier.transforms;
 
-import bezier.TDHPoint;
+import bezier.geom.TDHPoint;
 
 public class TDHPointRotation extends TDHRotation {
 	public final double x0;

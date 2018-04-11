@@ -6,6 +6,8 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
+import bezier.geom.TDPoint;
+
 /**
  * Renderer for TDPoints in JLists.
  * 

@@ -9,6 +9,9 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
+import bezier.geom.Bezier;
+import bezier.geom.TDHPoint;
+import bezier.geom.TDPoint;
 import bezier.transforms.TDHCombination;
 import bezier.transforms.TDHTransform;
 import bezier.transforms.TDHTranslate;

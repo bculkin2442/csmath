@@ -1,6 +1,6 @@
 package bezier.transforms;
 
-import bezier.TDHPoint;
+import bezier.geom.TDHPoint;
 
 public class TDHRotation implements TDHTransform {
 	public final double theta;

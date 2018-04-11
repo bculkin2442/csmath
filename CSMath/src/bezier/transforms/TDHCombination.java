@@ -3,7 +3,7 @@ package bezier.transforms;
 import java.util.ArrayList;
 import java.util.List;
 
-import bezier.TDHPoint;
+import bezier.geom.TDHPoint;
 
 public class TDHCombination implements TDHTransform {
 	public final List<TDHTransform> forms;

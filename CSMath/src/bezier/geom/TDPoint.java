@@ -1,4 +1,4 @@
-package bezier;
+package bezier.geom;
 
 /**
  * Represents a two-dimensional point.

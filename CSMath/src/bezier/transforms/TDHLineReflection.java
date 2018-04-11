@@ -1,6 +1,6 @@
 package bezier.transforms;
 
-import bezier.TDHPoint;
+import bezier.geom.TDHPoint;
 
 public class TDHLineReflection implements TDHTransform {
 	public final double a;
