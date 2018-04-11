@@ -346,10 +346,7 @@ class BezierPanel extends JPanel {
 		g.drawLine(halfWidth, 0, halfWidth, ourHeight);
 		g.drawLine(0, halfHeight, ourWidth, halfHeight);
 
-		// g.translate(halfWidth, halfHeight);
-
-		TDHTransform translate = new TDHCombination(new TDHXAxisReflection(),
-				new TDHTranslate(halfWidth, halfHeight));
+		TDHTransform translate = new TDHCombination(new TDHXAxisReflection(), new TDHTranslate(halfWidth, halfHeight));
 
 		for (Bezier curve : curves) {
 			if (curve.controls.isEmpty()) {
@@ -368,7 +365,9 @@ class BezierPanel extends JPanel {
 
 			g.setColor(curve.pointColor);
 			for (TDPoint control : curve.controls) {
-				control = translate.transform(control.toTDHPoint()).toTDPoint();
+				TDHPoint translatedPoint = translate.transform(control.multiply(curve.scale).toTDHPoint());
+
+				control = translatedPoint.toTDPoint();
 
 				drawCircle(g, control.x, control.y, 6);
 			}
@@ -691,8 +690,7 @@ class PointRemover implements ActionListener {
 
 		String msg = String.format("Do you want to remove the control point (%.2f, %.2f)?", punkt.x, punkt.y);
 
-		int confirmed = JOptionPane.showConfirmDialog(fram, msg, "Remove Control Point?",
-				JOptionPane.YES_NO_OPTION);
+		int confirmed = JOptionPane.showConfirmDialog(fram, msg, "Remove Control Point?", JOptionPane.YES_NO_OPTION);
 
 		if (confirmed == JOptionPane.YES_OPTION) {
 			pointModel.remove(selectedIndex);
@@ -1020,8 +1018,7 @@ class TDHScale implements TDHTransform {
 
 	@Override
 	public double[][] matrix() {
-		return new double[][] { new double[] { sx, 0, 0 }, new double[] { 0, sy, 0 },
-				new double[] { 0, 0, sz } };
+		return new double[][] { new double[] { sx, 0, 0 }, new double[] { 0, sy, 0 }, new double[] { 0, 0, sz } };
 	}
 
 	public TDHTransform invert() {
