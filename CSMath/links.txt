@@ -1,0 +1,5 @@
+https://en.wikipedia.org/wiki/Isometric_projection
+https://introcs.cs.princeton.edu/java/22library/Matrix.java.html
+https://en.wikipedia.org/wiki/Oblique_projection
+https://en.wikipedia.org/wiki/3D_projection
+https://en.wikipedia.org/wiki/Bezier_surface
