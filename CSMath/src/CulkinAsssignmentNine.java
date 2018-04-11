@@ -38,17 +38,37 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
-@SuppressWarnings("javadoc")
+/**
+ * Main class for Bezier graphing.
+ * 
+ * @author acm
+ *
+ */
 public class CulkinAsssignmentNine {
+	/**
+	 * The current bezier curve.
+	 */
 	public final Holder<Bezier> currentCurve;
+	/**
+	 * The directory of all bezier curves.
+	 */
 	public final Map<String, Bezier> curveDirectory;
 
+	/**
+	 * Create a new main class.
+	 */
 	public CulkinAsssignmentNine() {
 		curveDirectory = new HashMap<>();
 
+		/*
+		 * Set current curve.
+		 */
 		currentCurve = new Holder<>();
 		currentCurve.setVal(new Bezier());
 
+		/*
+		 * Install current curve into directory.
+		 */
 		curveDirectory.put("Default", currentCurve.getVal());
 	}
 
@@ -154,7 +174,11 @@ public class CulkinAsssignmentNine {
 					"Clear Points", JOptionPane.YES_NO_OPTION);
 
 			if (confirm == JOptionPane.YES_OPTION) {
+				currentCurve.getVal().controls.clear();
+				
 				currentCurve.setVal(new Bezier());
+				
+				canvas.repaint();
 			}
 		});
 
@@ -657,6 +681,12 @@ class PointRemover implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent ev) {
 		int selectedIndex = pointList.getSelectedIndex();
+		
+		/*
+		 * Nothing selected.
+		 */
+		if(selectedIndex == -1) return;
+		
 		TDPoint punkt = pointModel.get(selectedIndex);
 
 		String msg = String.format("Do you want to remove the control point (%.2f, %.2f)?", punkt.x, punkt.y);
