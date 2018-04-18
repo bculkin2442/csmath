@@ -1,4 +1,5 @@
 package bisection;
+
 /**
  * Represents an expression using dual numbers.
  *
@@ -83,7 +84,7 @@ public class DualExpr {
 	 * Create a new constant dual number.
 	 *
 	 * @param num
-	 *                The value of the dual number.
+	 *            The value of the dual number.
 	 */
 	public DualExpr(Dual num) {
 		this.type = ExprType.CONSTANT;
@@ -95,9 +96,9 @@ public class DualExpr {
 	 * Create a new unary dual number.
 	 *
 	 * @param type
-	 *                The type of operation to perform.
+	 *            The type of operation to perform.
 	 * @param val
-	 *                The parameter to the value.
+	 *            The parameter to the value.
 	 */
 	public DualExpr(DualExpr.ExprType type, DualExpr val) {
 		this.type = type;
@@ -109,9 +110,11 @@ public class DualExpr {
 	 * Create a new binary dual number.
 	 *
 	 * @param type
-	 *                The type of operation to perform.
-	 * @param val
-	 *                The parameter to the value.
+	 *            The type of operation to perform.
+	 * @param left
+	 *            The left operand
+	 * @param right
+	 *            The right operand
 	 */
 	public DualExpr(DualExpr.ExprType type, DualExpr left, DualExpr right) {
 		this.type = type;
@@ -124,9 +127,9 @@ public class DualExpr {
 	 * Create a new power expression.
 	 *
 	 * @param left
-	 *                The expression to raise.
+	 *            The expression to raise.
 	 * @param power
-	 *                The power to raise it by.
+	 *            The power to raise it by.
 	 */
 	public DualExpr(DualExpr left, int power) {
 		this.type = ExprType.POWER;
@@ -207,8 +210,7 @@ public class DualExpr {
 			lval = left.evaluate();
 
 			if (lval.real <= 0) {
-				throw new IllegalArgumentException(
-						"ERROR: Attempted to take non-positive log.");
+				throw new IllegalArgumentException("ERROR: Attempted to take non-positive log.");
 			}
 
 			return new Dual(Math.log(lval.real), lval.dual / lval.real);

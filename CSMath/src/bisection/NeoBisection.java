@@ -1,4 +1,5 @@
 package bisection;
+
 import java.util.function.DoubleUnaryOperator;
 
 /*
@@ -10,12 +11,25 @@ import java.util.function.DoubleUnaryOperator;
  * Use the bisection method to find bracketed roots of arbitrary real-valued functions.
  */
 
+/**
+ * Use the bisection method to find bracketed roots of arbitrary real-valued
+ * functions.
+ * 
+ * @author student
+ *
+ */
 public class NeoBisection {
 	/**
 	 * Maximum number of iterations to attempt.
 	 */
 	public static final int MAXITR = 500;
 
+	/**
+	 * Main method
+	 * 
+	 * @param args
+	 *            Unused CLI args
+	 */
 	public static void main(String[] args) {
 		/* Bisection Method. */
 
@@ -49,8 +63,8 @@ public class NeoBisection {
 		DualExpr varXExpr = new DualExpr(varX);
 
 		/* The functions to find the roots of. */
-		DualExpr dualA = new DualExpr(DualExpr.ExprType.SUBTRACTION,
-				new DualExpr(DualExpr.ExprType.COS, varXExpr), varXExpr);
+		DualExpr dualA = new DualExpr(DualExpr.ExprType.SUBTRACTION, new DualExpr(DualExpr.ExprType.COS, varXExpr),
+				varXExpr);
 
 		DualExpr dualB;
 
@@ -62,8 +76,7 @@ public class NeoBisection {
 			DualExpr tempC = new DualExpr(DualExpr.ExprType.MULTIPLICATION, new DualExpr(new Dual(4)),
 					new DualExpr(varXExpr, 3));
 
-			dualB = new DualExpr(DualExpr.ExprType.ADDITION,
-					new DualExpr(DualExpr.ExprType.SUBTRACTION, tempA, tempB),
+			dualB = new DualExpr(DualExpr.ExprType.ADDITION, new DualExpr(DualExpr.ExprType.SUBTRACTION, tempA, tempB),
 					new DualExpr(DualExpr.ExprType.SUBTRACTION, tempC, new DualExpr(new Dual(1))));
 		}
 
@@ -145,19 +158,19 @@ public class NeoBisection {
 	 * Use Newton's method to find the root of an equation.
 	 *
 	 * @param func
-	 *                The function to find a root for.
+	 *            The function to find a root for.
 	 *
 	 * @param var
-	 *                The variable in the function.
+	 *            The variable in the function.
 	 *
 	 * @param lo
-	 *                The lower bound for the root
+	 *            The lower bound for the root
 	 *
 	 * @param hi
-	 *                The higher bound for the root
+	 *            The higher bound for the root
 	 *
 	 * @param tol
-	 *                The tolerance for the answer
+	 *            The tolerance for the answer
 	 *
 	 * @return The estimated value for the equation.
 	 */
@@ -191,6 +204,21 @@ public class NeoBisection {
 		return newmid;
 	}
 
+	/**
+	 * Calculate a root using the secant method.
+	 * 
+	 * @param func
+	 *            The function to calculate a root for.
+	 * @param var
+	 *            The variable in the function.
+	 * @param lo
+	 *            The lower bound of the root.
+	 * @param hi
+	 *            The upper bound of the root.
+	 * @param tol
+	 *            The tolerance to find the root to.
+	 * @return The root, to within the desired tolerance.
+	 */
 	public static double secant(DualExpr func, Dual var, double lo, double hi, double tol) {
 		/* Initial guesses for root. */
 		double guess1 = (lo + hi) / 3; // 1/3 into the range
@@ -224,328 +252,5 @@ public class NeoBisection {
 
 		/* Give back the solution. */
 		return guess2;
-	}
-
-	/**
-	 * Represents a 'dual' number.
-	 *
-	 * Think imaginary numbers, where instead of i, we add a value d such that d^2 =
-	 * 0.
-	 */
-	public static class Dual {
-		/**
-		 * The real part of the dual number.
-		 */
-		public double real;
-		/**
-		 * The dual part of the dual number.
-		 */
-		public double dual;
-
-		/**
-		 * Create a new dual with both parts zero.
-		 */
-		public Dual() {
-			real = 0;
-			dual = 0;
-		}
-
-		/**
-		 * Create a new dual number with a zero dual part.
-		 *
-		 * @param real
-		 *                The real part of the number.
-		 */
-		public Dual(double real) {
-			this.real = real;
-			this.dual = 0;
-		}
-
-		/**
-		 * Create a new dual number with a specified dual part.
-		 *
-		 * @param real
-		 *                The real part of the number.
-		 * @param dual
-		 *                The dual part of the number.
-		 */
-		public Dual(double real, double dual) {
-			this.real = real;
-			this.dual = dual;
-		}
-
-		@Override
-		public String toString() {
-			return String.format("<%f, %f>", real, dual);
-		}
-	}
-
-	/**
-	 * Represents an expression using dual numbers.
-	 *
-	 * Useful for automatically differentiating expressions.
-	 */
-	public static class DualExpr {
-		/**
-		 * Represents the various types of dual expressions.
-		 */
-		public static enum ExprType {
-			/**
-			 * A fixed number.
-			 */
-			CONSTANT,
-			/**
-			 * An addition operation.
-			 */
-			ADDITION,
-			/**
-			 * A subtraction operation.
-			 */
-			SUBTRACTION,
-			/**
-			 * A multiplication operation.
-			 */
-			MULTIPLICATION,
-			/**
-			 * A division operation.
-			 */
-			DIVISION,
-			/**
-			 * A sine operation.
-			 */
-			SIN,
-			/**
-			 * A cosine operation.
-			 */
-			COS,
-			/**
-			 * An exponential function.
-			 */
-			EXPONENTIAL,
-			/**
-			 * A logarithm function.
-			 */
-			LOGARITHM,
-			/**
-			 * A power operation.
-			 */
-			POWER,
-			/**
-			 * An absolute value.
-			 */
-			ABSOLUTE
-		}
-
-		/**
-		 * The type of the expression.
-		 */
-		public final ExprType type;
-
-		/**
-		 * The dual number value, for constants.
-		 */
-		public Dual number;
-
-		/**
-		 * The left (or first) part of the expression.
-		 */
-		public DualExpr left;
-		/**
-		 * The right (or second) part of the expression.
-		 */
-		public DualExpr right;
-
-		/**
-		 * The power to use, for power operations.
-		 */
-		public int power;
-
-		/**
-		 * Create a new constant dual number.
-		 *
-		 * @param num
-		 *                The value of the dual number.
-		 */
-		public DualExpr(Dual num) {
-			this.type = ExprType.CONSTANT;
-
-			number = num;
-		}
-
-		/**
-		 * Create a new unary dual number.
-		 *
-		 * @param type
-		 *                The type of operation to perform.
-		 * @param val
-		 *                The parameter to the value.
-		 */
-		public DualExpr(ExprType type, DualExpr val) {
-			this.type = type;
-
-			left = val;
-		}
-
-		/**
-		 * Create a new binary dual number.
-		 *
-		 * @param type
-		 *                The type of operation to perform.
-		 * @param val
-		 *                The parameter to the value.
-		 */
-		public DualExpr(ExprType type, DualExpr left, DualExpr right) {
-			this.type = type;
-
-			this.left = left;
-			this.right = right;
-		}
-
-		/**
-		 * Create a new power expression.
-		 *
-		 * @param left
-		 *                The expression to raise.
-		 * @param power
-		 *                The power to raise it by.
-		 */
-		public DualExpr(DualExpr left, int power) {
-			this.type = ExprType.POWER;
-
-			this.left = left;
-			this.power = power;
-		}
-
-		/**
-		 * Evaluate an expression to a number.
-		 *
-		 * Uses the rules provided in
-		 * https://en.wikipedia.org/wiki/Automatic_differentiation
-		 *
-		 * @return The evaluated expression.
-		 */
-		public Dual evaluate() {
-			/* The evaluated dual numbers. */
-			Dual lval, rval;
-
-			/* Perform the right operation for each type. */
-			switch (type) {
-			case CONSTANT:
-				return number;
-			case ADDITION:
-				lval = left.evaluate();
-				rval = right.evaluate();
-
-				return new Dual(lval.real + rval.real, lval.dual + rval.dual);
-			case SUBTRACTION:
-				lval = left.evaluate();
-				rval = right.evaluate();
-
-				return new Dual(lval.real - rval.real, lval.real - rval.real);
-			case MULTIPLICATION:
-				lval = left.evaluate();
-				rval = right.evaluate();
-
-			{
-				double lft = lval.dual * rval.real;
-				double rght = lval.real * rval.dual;
-
-				return new Dual(lval.real * rval.real, lft + rght);
-			}
-			case DIVISION:
-				lval = left.evaluate();
-				rval = right.evaluate();
-
-			{
-				if (rval.real == 0) {
-					throw new IllegalArgumentException("ERROR: Attempted to divide by zero.");
-				}
-
-				double lft = lval.dual * rval.real;
-				double rght = lval.real * rval.dual;
-
-				double val = (lft - rght) / (rval.real * rval.real);
-
-				return new Dual(lval.real / rval.real, val);
-			}
-			case SIN:
-				lval = left.evaluate();
-
-				return new Dual(Math.sin(lval.real), lval.dual * Math.cos(lval.real));
-			case COS:
-				lval = left.evaluate();
-
-				return new Dual(Math.cos(lval.real), -lval.dual * Math.sin(lval.real));
-			case EXPONENTIAL:
-				lval = left.evaluate();
-
-			{
-				double val = Math.exp(lval.real);
-
-				return new Dual(val, lval.dual * val);
-			}
-			case LOGARITHM:
-				lval = left.evaluate();
-
-				if (lval.real <= 0) {
-					throw new IllegalArgumentException(
-							"ERROR: Attempted to take non-positive log.");
-				}
-
-				return new Dual(Math.log(lval.real), lval.dual / lval.real);
-			case POWER:
-				lval = left.evaluate();
-
-				if (lval.real == 0) {
-					throw new IllegalArgumentException("ERROR: Raising zero to a power.");
-				}
-
-			{
-				double rl = Math.pow(lval.real, power);
-
-				double lft = Math.pow(lval.real, power - 1);
-
-				return new Dual(rl, power * lft * lval.dual);
-			}
-			case ABSOLUTE:
-				lval = left.evaluate();
-
-				return new Dual(Math.abs(lval.real), lval.dual * Math.signum(lval.real));
-			default:
-				String msg = "ERROR: Unknown expression type %s";
-
-				throw new IllegalArgumentException(String.format(msg, type));
-			}
-		}
-
-		@Override
-		public String toString() {
-			switch (type) {
-			case ABSOLUTE:
-				return String.format("abs(%s)", left.toString());
-			case ADDITION:
-				return String.format("(%s + %s)", left.toString(), right.toString());
-			case CONSTANT:
-				return String.format("%s", number.toString());
-			case COS:
-				return String.format("cos(%s)", left.toString());
-			case DIVISION:
-				return String.format("(%s / %s)", left.toString(), right.toString());
-			case EXPONENTIAL:
-				return String.format("exp(%s)", left.toString());
-			case LOGARITHM:
-				return String.format("log(%s)", left.toString());
-			case MULTIPLICATION:
-				return String.format("(%s * %s)", left.toString(), right.toString());
-			case POWER:
-				return String.format("(%s ^ %d)", left.toString(), power);
-			case SIN:
-				return String.format("sin(%s)", left.toString());
-			case SUBTRACTION:
-				return String.format("(%s - %s)", left.toString(), right.toString());
-			default:
-				return String.format("UNKNOWN_EXPR");
-			}
-		}
 	}
 }

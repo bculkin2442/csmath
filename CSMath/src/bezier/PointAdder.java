@@ -12,7 +12,6 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import bezier.PointAdder.AddListener;
 import bezier.geom.Bezier;
 import bezier.geom.TDPoint;
 
