@@ -1,4 +1,4 @@
-package bezier.transforms;
+package bezier.geom.transform;
 
 /**
  * Types of transform to apply to TDHPoints.

@@ -3,8 +3,8 @@ package bezier.geom;
 import java.util.ArrayList;
 import java.util.List;
 
-import bezier.transforms.TDHIdentity;
-import bezier.transforms.TDHTransform;
+import bezier.geom.transform.TDHIdentity;
+import bezier.geom.transform.TDHTransform;
 
 /**
  * Represents a bezier curve.

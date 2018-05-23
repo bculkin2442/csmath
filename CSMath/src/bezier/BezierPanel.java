@@ -12,10 +12,10 @@ import javax.swing.border.BevelBorder;
 import bezier.geom.Bezier;
 import bezier.geom.TDHPoint;
 import bezier.geom.TDPoint;
-import bezier.transforms.TDHCombination;
-import bezier.transforms.TDHTransform;
-import bezier.transforms.TDHTranslate;
-import bezier.transforms.TDHXAxisReflection;
+import bezier.geom.transform.TDHCombination;
+import bezier.geom.transform.TDHTransform;
+import bezier.geom.transform.TDHTranslate;
+import bezier.geom.transform.TDHXAxisReflection;
 
 /*
  * Panel that graphs a set of bezier curves.

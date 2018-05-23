@@ -1,4 +1,4 @@
-package bezier.transforms;
+package bezier.geom.transform;
 
 import bezier.geom.Matrix;
 import bezier.geom.TDHPoint;

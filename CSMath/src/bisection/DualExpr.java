@@ -1,4 +1,5 @@
 package bisection;
+
 /**
  * Represents an expression using dual numbers.
  *
@@ -68,11 +69,11 @@ public class DualExpr {
 	/**
 	 * The left (or first) part of the expression.
 	 */
-	public DualExpr left;
+	public DualExpr	left;
 	/**
 	 * The right (or second) part of the expression.
 	 */
-	public DualExpr right;
+	public DualExpr	right;
 
 	/**
 	 * The power to use, for power operations.
@@ -106,12 +107,14 @@ public class DualExpr {
 	}
 
 	/**
-	 * Create a new binary dual number.
-	 *
+	 * Create a new math expression.
+	 * 
 	 * @param type
-	 *                The type of operation to perform.
-	 * @param val
-	 *                The parameter to the value.
+	 *                The math operation to perform
+	 * @param left
+	 *                The left operand
+	 * @param right
+	 *                The right operand.
 	 */
 	public DualExpr(DualExpr.ExprType type, DualExpr left, DualExpr right) {
 		this.type = type;
@@ -207,8 +210,7 @@ public class DualExpr {
 			lval = left.evaluate();
 
 			if (lval.real <= 0) {
-				throw new IllegalArgumentException(
-						"ERROR: Attempted to take non-positive log.");
+				throw new IllegalArgumentException("ERROR: Attempted to take non-positive log.");
 			}
 
 			return new Dual(Math.log(lval.real), lval.dual / lval.real);

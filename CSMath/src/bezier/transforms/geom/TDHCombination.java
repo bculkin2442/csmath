@@ -1,4 +1,4 @@
-package bezier.transforms;
+package bezier.transforms.geom;
 
 import java.util.ArrayList;
 import java.util.List;
