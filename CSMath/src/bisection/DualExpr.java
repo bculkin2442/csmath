@@ -84,7 +84,7 @@ public class DualExpr {
 	 * Create a new constant dual number.
 	 *
 	 * @param num
-	 *                The value of the dual number.
+	 *            The value of the dual number.
 	 */
 	public DualExpr(Dual num) {
 		this.type = ExprType.CONSTANT;
@@ -96,9 +96,9 @@ public class DualExpr {
 	 * Create a new unary dual number.
 	 *
 	 * @param type
-	 *                The type of operation to perform.
+	 *            The type of operation to perform.
 	 * @param val
-	 *                The parameter to the value.
+	 *            The parameter to the value.
 	 */
 	public DualExpr(DualExpr.ExprType type, DualExpr val) {
 		this.type = type;
@@ -109,12 +109,11 @@ public class DualExpr {
 	/**
 	 * Create a new math expression.
 	 * 
-	 * @param type
-	 *                The math operation to perform
+	 *            The type of operation to perform.
 	 * @param left
-	 *                The left operand
+	 *            The left operand
 	 * @param right
-	 *                The right operand.
+	 *            The right operand
 	 */
 	public DualExpr(DualExpr.ExprType type, DualExpr left, DualExpr right) {
 		this.type = type;
@@ -127,9 +126,9 @@ public class DualExpr {
 	 * Create a new power expression.
 	 *
 	 * @param left
-	 *                The expression to raise.
+	 *            The expression to raise.
 	 * @param power
-	 *                The power to raise it by.
+	 *            The power to raise it by.
 	 */
 	public DualExpr(DualExpr left, int power) {
 		this.type = ExprType.POWER;
