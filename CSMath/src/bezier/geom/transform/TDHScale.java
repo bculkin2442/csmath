@@ -81,6 +81,7 @@ public class TDHScale implements TDHTransform {
 		return new double[][] { new double[] { sx, 0, 0 }, new double[] { 0, sy, 0 }, new double[] { 0, 0, sz } };
 	}
 
+	@Override
 	public TDHTransform invert() {
 		return new TDHScale(1 / sx, 1 / sy, 1 / sy);
 	}

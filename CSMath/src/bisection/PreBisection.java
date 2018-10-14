@@ -9,7 +9,16 @@ package bisection;
  */
 import java.util.function.DoubleUnaryOperator;
 
+/**
+ * Previous attempt at bisection.
+ * @author bjculkin
+ *
+ */
 public class PreBisection {
+	/**
+	 * Main method.
+	 * @param args Unused CLI args.
+	 */
 	public static void main(String[] args) {
 		// The functions we're approximating a root for
 		DoubleUnaryOperator functionA = x -> Math.cos(x) - x;

@@ -55,6 +55,10 @@ public class CulkinAsssignmentNine {
 		curveDirectory.put("Default", currentCurve.getVal());
 	}
 
+	/**
+	 * Main method.
+	 * @param args Unused CLI args.
+	 */
 	public static void main(String[] args) {
 		CulkinAsssignmentNine assign = new CulkinAsssignmentNine();
 

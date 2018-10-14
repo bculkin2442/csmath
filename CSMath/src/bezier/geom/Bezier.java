@@ -24,7 +24,7 @@ public class Bezier {
 	 * Create a new bezier curve from a set of control points.
 	 * 
 	 * @param points
-	 *            The control points to use.
+	 *                The control points to use.
 	 */
 	public Bezier(TDPoint... points) {
 		data = new BezierProperties();
@@ -40,7 +40,7 @@ public class Bezier {
 	 * Do a scaled evaluation of the curve.
 	 * 
 	 * @param t
-	 *            The value to evaluate at.
+	 *                The value to evaluate at.
 	 * @return The point on the curve, scaled by the curves scaling factor.
 	 */
 	public TDPoint scaleEval(double t) {
@@ -51,11 +51,11 @@ public class Bezier {
 	 * Do a scaled evaluation of the curve.
 	 * 
 	 * @param t
-	 *            The value to evaluate at.
+	 *                The value to evaluate at.
+	 * @return The point on the curve.
 	 */
 	public TDPoint eval(double t) {
-		if (controls.isEmpty())
-			return new TDPoint(0, 0);
+		if (controls.isEmpty()) return new TDPoint(0, 0);
 
 		TDPoint punkt = evalIntern(t, controls.size() - 1, 0);
 
@@ -95,7 +95,7 @@ public class Bezier {
 	 * Split a curve into two curves at a specific point.
 	 * 
 	 * @param t
-	 *            The point to split the curve at.
+	 *                The point to split the curve at.
 	 * @return The two curves, split at that point.
 	 */
 	public Bezier[] decompose(double t) {
@@ -136,10 +136,11 @@ public class Bezier {
 	}
 
 	/**
-	 * Get the bounding box for a transformed version of this curves control points.
+	 * Get the bounding box for a transformed version of this curves control
+	 * points.
 	 * 
 	 * @param transform
-	 *            The transform to apply to the control points.
+	 *                The transform to apply to the control points.
 	 * @return The bounding box for the transformed control points.
 	 */
 	public TDPoint[] extrema(TDHTransform transform) {
@@ -197,18 +198,13 @@ public class Bezier {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
 		Bezier other = (Bezier) obj;
 		if (controls == null) {
-			if (other.controls != null)
-				return false;
-		} else if (!controls.equals(other.controls))
-			return false;
+			if (other.controls != null) return false;
+		} else if (!controls.equals(other.controls)) return false;
 		return true;
 	}
 

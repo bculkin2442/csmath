@@ -8,12 +8,21 @@ package bisection;
  * Use the bisection method to find bracketed roots of arbitrary real-valued functions.
  */
 
+/**
+ * Bisect a curve to find bracketed roots of arbitrary real-valued functions.
+ * @author bjculkin
+ *
+ */
 public class Bisection {
 	/**
 	 * Maximum number of iterations to attempt.
 	 */
 	public static final int MAXITR = 500;
 
+	/**
+	 * Main method.
+	 * @param args Unused CLI args.
+	 */
 	public static void main(String[] args) {
 		/* The variable to manipulate in the expressions. */
 		Dual varX = new Dual();
@@ -115,6 +124,15 @@ public class Bisection {
 		return newmid;
 	}
 
+	/**
+	 * Bisect an arbitrary expression using the secant method.
+	 * @param func The expression to bisect.
+	 * @param var The variable to manipulate.
+	 * @param lo The lower bounding value.
+	 * @param hi The higher bounding value.
+	 * @param tol The tolerance to find the answer to.
+	 * @return The bisected root for the expression, within the specified tolerance.
+	 */
 	public static double secant(DualExpr func, Dual var, double lo, double hi, double tol) {
 		/* Initial guesses for root. */
 		double guess1 = (lo + hi) / 3; // 1/3 into the range

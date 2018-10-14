@@ -5,7 +5,15 @@ import java.util.List;
 
 import bezier.geom.TDHPoint;
 
+/**
+ * Combination of 2D homogenous transforms.
+ * @author bjculkin
+ *
+ */
 public class TDHCombination implements TDHTransform {
+	/**
+	 * The transforms that make up this transform.
+	 */
 	public final List<TDHTransform> forms;
 
 	@Override
@@ -13,6 +21,10 @@ public class TDHCombination implements TDHTransform {
 		return TDHTransformType.COMBINATION;
 	}
 
+	/**
+	 * Create a new combined transform.
+	 * @param forms The transforms to combine.
+	 */
 	public TDHCombination(TDHTransform... forms) {
 		this.forms = new ArrayList<>(forms.length);
 

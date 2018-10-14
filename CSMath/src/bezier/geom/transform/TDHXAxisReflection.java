@@ -2,6 +2,11 @@ package bezier.geom.transform;
 
 import bezier.geom.TDHPoint;
 
+/**
+ * Reflect about x-axis.
+ * @author bjculkin
+ *
+ */
 public class TDHXAxisReflection implements TDHTransform {
 	@Override
 	public TDHTransformType type() {

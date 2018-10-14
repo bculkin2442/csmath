@@ -22,10 +22,10 @@ import bezier.geom.TDPoint;
  *
  */
 public class PointAdder implements ActionListener {
-	private final DefaultListModel<TDPoint> pointModel;
+	final DefaultListModel<TDPoint> pointModel;
 	private final JFrame fram;
 
-	private Bezier curve;
+	Bezier curve;
 
 	/**
 	 * Create a listener that adds points to a bezier curve.

@@ -2,9 +2,21 @@ package bezier.geom.transform;
 
 import bezier.geom.TDHPoint;
 
+/**
+ * Rotation transform.
+ * @author bjculkin
+ *
+ */
 public class TDHRotation implements TDHTransform {
+	/**
+	 * Degrees to rotate.
+	 */
 	public final double theta;
 
+	/**
+	 * Create a new rotation transform.
+	 * @param theta The degrees to rotate.
+	 */
 	public TDHRotation(double theta) {
 		this.theta = theta;
 	}
@@ -17,11 +29,13 @@ public class TDHRotation implements TDHTransform {
 		return new TDHPoint(x, y, punkt.z);
 	}
 
+	@Override
 	public double[][] matrix() {
 		return new double[][] { new double[] { Math.cos(theta), Math.sin(theta), 0 },
 				new double[] { -Math.sin(theta), Math.cos(theta), 0 }, new double[] { 0, 0, 1 } };
 	}
 
+	@Override
 	public TDHTransform invert() {
 		return new TDHRotation(-theta);
 	}

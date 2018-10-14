@@ -2,11 +2,31 @@ package bezier.geom.transform;
 
 import bezier.geom.TDHPoint;
 
+/**
+ * Transform to reflect across a line.
+ * @author bjculkin
+ *
+ */
 public class TDHLineReflection implements TDHTransform {
+	/**
+	 * 'a' value for line.
+	 */
 	public final double a;
+	/**
+	 * 'b' value for line.
+	 */
 	public final double b;
+	/**
+	 * 'c' value for line.
+	 */
 	public final double c;
 
+	/**
+	 * Create a new line-reflect transform.
+	 * @param a 'a' value for the line.
+	 * @param b 'b' value for the line.
+	 * @param c 'c' value for the line.
+	 */
 	public TDHLineReflection(double a, double b, double c) {
 		this.a = a;
 		this.b = b;

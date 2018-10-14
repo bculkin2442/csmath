@@ -16,7 +16,7 @@ import javax.swing.border.TitledBorder;
 
 import bezier.geom.Bezier;
 
-/*
+/**
  * Do editing of curve properties.
  */
 public class CurveEditor implements ActionListener {
@@ -24,6 +24,12 @@ public class CurveEditor implements ActionListener {
 	private JFrame fram;
 	private BezierPanel canvas;
 
+	/**
+	 * Create a new curve property editor.
+	 * @param fram The frame we came from.
+	 * @param currentCurve The curve being edited.
+	 * @param canvas The panel the curve is being drawn on.
+	 */
 	public CurveEditor(JFrame fram, Holder<Bezier> currentCurve, BezierPanel canvas) {
 		this.fram = fram;
 		this.canvas = canvas;

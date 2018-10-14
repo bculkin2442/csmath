@@ -17,14 +17,20 @@ import bezier.geom.transform.TDHTransform;
 import bezier.geom.transform.TDHTranslate;
 import bezier.geom.transform.TDHXAxisReflection;
 
-/*
+/**
  * Panel that graphs a set of bezier curves.
  */
 public class BezierPanel extends JPanel {
+	/**
+	 * The collection of curves to graph.
+	 */
 	public final Collection<Bezier> curves;
 
 	private static final long serialVersionUID = 8748298173487657108L;
 
+	/**
+	 * Create a new bezier panel.
+	 */
 	public BezierPanel() {
 		super();
 
@@ -33,6 +39,10 @@ public class BezierPanel extends JPanel {
 		setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 	}
 
+	/**
+	 * Create a new bezier panel with a specific set of curves.
+	 * @param curvs The curves to graph.
+	 */
 	public BezierPanel(Collection<Bezier> curvs) {
 		super();
 

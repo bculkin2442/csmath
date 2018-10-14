@@ -2,10 +2,27 @@ package bezier.geom.transform;
 
 import bezier.geom.TDHPoint;
 
+/**
+ * Transformation doing rotation about a point.
+ * @author bjculkin
+ *
+ */
 public class TDHPointRotation extends TDHRotation {
+	/**
+	 * x-coordinate of point.
+	 */
 	public final double x0;
+	/**
+	 * y-coordinate of point.
+	 */
 	public final double y0;
 
+	/**
+	 * Create a new point rotation.
+	 * @param theta The degrees to rotate about the point.
+	 * @param x0 The x-coordinate of the point.
+	 * @param y0 The y-coordinate of the point.
+	 */
 	public TDHPointRotation(double theta, double x0, double y0) {
 		super(theta);
 

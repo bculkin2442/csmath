@@ -2,8 +2,19 @@ package bezier.geom.transform;
 
 import bezier.geom.TDHPoint;
 
+/**
+ * Shear transform.
+ * @author bjculkin
+ *
+ */
 public class TDHShear implements TDHTransform {
+	/**
+	 * x-value for shear.
+	 */
 	public final double shx;
+	/**
+	 * y-value for shear.
+	 */
 	public final double shy;
 
 	@Override
@@ -11,6 +22,11 @@ public class TDHShear implements TDHTransform {
 		return TDHTransformType.SHEAR;
 	}
 
+	/**
+	 * Create a new shear transform.
+	 * @param shx The x-value for shearing.
+	 * @param shy The y-value for shearing.
+	 */
 	public TDHShear(double shx, double shy) {
 		this.shx = shx;
 		this.shy = shy;
