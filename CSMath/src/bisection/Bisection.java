@@ -8,6 +8,9 @@ package bisection;
  * Use the bisection method to find bracketed roots of arbitrary real-valued functions.
  */
 
+import bjc.utils.math.Dual;
+import bjc.utils.math.DualExpr;
+
 /**
  * Bisect a curve to find bracketed roots of arbitrary real-valued functions.
  * @author bjculkin

@@ -2,6 +2,9 @@ package bisection;
 
 import java.util.function.DoubleUnaryOperator;
 
+import bjc.utils.math.Dual;
+import bjc.utils.math.DualExpr;
+
 /*
  * Benjamin Culkin
  * 1/16/2018
