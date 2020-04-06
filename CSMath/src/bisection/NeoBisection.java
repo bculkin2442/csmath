@@ -4,6 +4,7 @@ import java.util.function.DoubleUnaryOperator;
 
 import bjc.utils.math.Dual;
 import bjc.utils.math.DualExpr;
+import bjc.utils.math.DualExpr.ExprType;
 
 /*
  * Benjamin Culkin
@@ -30,8 +31,7 @@ public class NeoBisection {
 	/**
 	 * Main method
 	 * 
-	 * @param args
-	 *            Unused CLI args
+	 * @param args Unused CLI args
 	 */
 	public static void main(String[] args) {
 		/* Bisection Method. */
@@ -66,31 +66,30 @@ public class NeoBisection {
 		DualExpr varXExpr = new DualExpr(varX);
 
 		/* The functions to find the roots of. */
-		DualExpr dualA = new DualExpr(DualExpr.ExprType.SUBTRACTION, new DualExpr(DualExpr.ExprType.COS, varXExpr),
-				varXExpr);
+		DualExpr dualA = new DualExpr(ExprType.SUBTRACTION, new DualExpr(ExprType.COS, varXExpr), varXExpr);
 
 		DualExpr dualB;
 
 		{
 			/* Construct the second function. */
-			DualExpr tempA = new DualExpr(varXExpr, 5);
-			DualExpr tempB = new DualExpr(DualExpr.ExprType.MULTIPLICATION, new DualExpr(new Dual(3)),
-					new DualExpr(varXExpr, 4));
-			DualExpr tempC = new DualExpr(DualExpr.ExprType.MULTIPLICATION, new DualExpr(new Dual(4)),
-					new DualExpr(varXExpr, 3));
+			DualExpr tempA = new DualExpr(ExprType.POWER, varXExpr, new DualExpr(new Dual(5)));
+			DualExpr tempB = new DualExpr(ExprType.MULTIPLICATION, new DualExpr(new Dual(3)),
+					new DualExpr(ExprType.POWER, varXExpr, new DualExpr(new Dual(4))));
+			DualExpr tempC = new DualExpr(ExprType.MULTIPLICATION, new DualExpr(new Dual(4)),
+					new DualExpr(ExprType.POWER, varXExpr, new DualExpr(new Dual(3))));
 
-			dualB = new DualExpr(DualExpr.ExprType.ADDITION, new DualExpr(DualExpr.ExprType.SUBTRACTION, tempA, tempB),
-					new DualExpr(DualExpr.ExprType.SUBTRACTION, tempC, new DualExpr(new Dual(1))));
+			dualB = new DualExpr(ExprType.ADDITION, new DualExpr(ExprType.SUBTRACTION, tempA, tempB),
+					new DualExpr(ExprType.SUBTRACTION, tempC, new DualExpr(new Dual(1))));
 		}
 
-		DualExpr dualC = new DualExpr(DualExpr.ExprType.SUBTRACTION, new DualExpr(varXExpr, 2),
-				new DualExpr(new Dual(3)));
+		DualExpr dualC = new DualExpr(ExprType.SUBTRACTION,
+				new DualExpr(ExprType.POWER, varXExpr, new DualExpr(new Dual(2))), new DualExpr(new Dual(3)));
 
 		/* Print out dualized expressions. */
 		System.out.printf("Expressions:\n");
 		System.out.printf("\t%s\n", dualA);
 		System.out.printf("\t%s\n", dualB);
-		System.out.printf("\t%s\n", dualC);
+		System.out.printf("\t%s\n\n", dualC);
 
 		/* The approximated roots, using Newton's method. */
 		double newtonA = newton(dualA, varX, 0, 1, 0.0001);
@@ -160,20 +159,15 @@ public class NeoBisection {
 	/**
 	 * Use Newton's method to find the root of an equation.
 	 *
-	 * @param func
-	 *            The function to find a root for.
+	 * @param func The function to find a root for.
 	 *
-	 * @param var
-	 *            The variable in the function.
+	 * @param var  The variable in the function.
 	 *
-	 * @param lo
-	 *            The lower bound for the root
+	 * @param lo   The lower bound for the root
 	 *
-	 * @param hi
-	 *            The higher bound for the root
+	 * @param hi   The higher bound for the root
 	 *
-	 * @param tol
-	 *            The tolerance for the answer
+	 * @param tol  The tolerance for the answer
 	 *
 	 * @return The estimated value for the equation.
 	 */
@@ -194,7 +188,6 @@ public class NeoBisection {
 
 			/* Use Newton's method to refine our solution. */
 			newmid = newmid - (res.real / res.dual);
-			System.out.printf("\tTRACE: prevmid: %f\t\tnewmid: %f\n", prevmid, newmid);
 			/* Hand back the solution if it's good enough. */
 			if (Math.abs(newmid - prevmid) < tol) {
 				return newmid;
@@ -210,41 +203,39 @@ public class NeoBisection {
 	/**
 	 * Calculate a root using the secant method.
 	 * 
-	 * @param func
-	 *            The function to calculate a root for.
-	 * @param var
-	 *            The variable in the function.
-	 * @param lo
-	 *            The lower bound of the root.
-	 * @param hi
-	 *            The upper bound of the root.
-	 * @param tol
-	 *            The tolerance to find the root to.
+	 * @param func The function to calculate a root for.
+	 * @param var  The variable in the function.
+	 * @param lo   The lower bound of the root.
+	 * @param hi   The upper bound of the root.
+	 * @param tol  The tolerance to find the root to.
 	 * @return The root, to within the desired tolerance.
 	 */
 	public static double secant(DualExpr func, Dual var, double lo, double hi, double tol) {
 		/* Initial guesses for root. */
-		double guess1 = (lo + hi) / 3; // 1/3 into the range
-		double guess2 = ((lo + hi) / 3) * 2; // 2/3 into the range
+		double guess1 = (lo + hi) / 3; // 1/3 into the range; x-2
+		double guess2 = ((lo + hi) / 3) * 2; // 2/3 into the range; x-1
 
 		for (int i = 0; i < MAXITR; i++) {
 			var.real = guess1;
-			var.dual = 1;
-			/* Evaluate the first guess. */
+			var.dual = 0;
+			/* Evaluate the first guess. fx-2 */
 			Dual res1 = func.evaluate();
 
 			var.real = guess2;
-			var.dual = 1;
-			/* Evaluate the first guess. */
+			var.dual = 0;
+			/* Evaluate the first guess. fx-1 */
 			Dual res2 = func.evaluate();
 
 			double oldGuess1 = guess1;
+			double oldGuess2 = guess2;
 
 			/* Use the secant method to refine our guesses. */
-			guess1 = guess2;
-			guess2 = ((oldGuess1 * res2.real) - (guess1 * res1.real)) / (res1.real - res2.real);
+			guess1 = guess2; // new fx-1
 
-			System.out.printf("\tTRACE: guess1: %f\t\tguess2: %f\n", guess1, guess2);
+			{
+				guess2 = ((oldGuess1 * res2.real) - (oldGuess2 * res1.real)) / (res2.real - res1.real);
+			}
+
 			/* Hand back the solution if it's good enough. */
 			if (Math.abs(guess1 - guess2) < tol) {
 				return guess2;

@@ -10,6 +10,7 @@ package bisection;
 
 import bjc.utils.math.Dual;
 import bjc.utils.math.DualExpr;
+import bjc.utils.math.DualExpr.ExprType;
 
 /**
  * Bisect a curve to find bracketed roots of arbitrary real-valued functions.
@@ -32,26 +33,26 @@ public class Bisection {
 		DualExpr varXExpr = new DualExpr(varX);
 
 		/* The functions to find the roots of. */
-		DualExpr dualA = new DualExpr(DualExpr.ExprType.SUBTRACTION,
-				new DualExpr(DualExpr.ExprType.COS, varXExpr), varXExpr);
+		DualExpr dualA = new DualExpr(ExprType.SUBTRACTION,
+				new DualExpr(ExprType.COS, varXExpr), varXExpr);
 
 		DualExpr dualB;
 
 		{
 			/* Construct the second function. */
-			DualExpr tempA = new DualExpr(varXExpr, 5);
-			DualExpr tempB = new DualExpr(DualExpr.ExprType.MULTIPLICATION, new DualExpr(new Dual(3)),
-					new DualExpr(varXExpr, 4));
-			DualExpr tempC = new DualExpr(DualExpr.ExprType.MULTIPLICATION, new DualExpr(new Dual(4)),
-					new DualExpr(varXExpr, 3));
+			DualExpr tempA = new DualExpr(ExprType.POWER, varXExpr, new DualExpr(new Dual(5)));
+			DualExpr tempB = new DualExpr(ExprType.MULTIPLICATION, new DualExpr(new Dual(3)),
+					new DualExpr(ExprType.POWER, varXExpr, new DualExpr(new Dual(4))));
+			DualExpr tempC = new DualExpr(ExprType.MULTIPLICATION, new DualExpr(new Dual(4)),
+					new DualExpr(ExprType.POWER, varXExpr, new DualExpr(new Dual(3))));
 
-			dualB = new DualExpr(DualExpr.ExprType.ADDITION,
-					new DualExpr(DualExpr.ExprType.SUBTRACTION, tempA, tempB),
-					new DualExpr(DualExpr.ExprType.SUBTRACTION, tempC, new DualExpr(new Dual(1))));
+			dualB = new DualExpr(ExprType.ADDITION,
+					new DualExpr(ExprType.SUBTRACTION, tempA, tempB),
+					new DualExpr(ExprType.SUBTRACTION, tempC, new DualExpr(new Dual(1))));
 		}
 
-		DualExpr dualC = new DualExpr(DualExpr.ExprType.SUBTRACTION,
-				new DualExpr(DualExpr.ExprType.MULTIPLICATION, varXExpr, varXExpr),
+		DualExpr dualC = new DualExpr(ExprType.SUBTRACTION,
+				new DualExpr(ExprType.MULTIPLICATION, varXExpr, varXExpr),
 				new DualExpr(new Dual(3)));
 
 		/* The approximated roots, using Newton's method. */
